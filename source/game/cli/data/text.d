@@ -11,12 +11,13 @@ import game.cli.data.commands;
 immutable commandList =
 "h - show help
 q - quit
-s - show states
+s - show state
+m - show recorded commands
+a - apply recorded commands
 c - close door
 o - open door
 l - lock door
-n - unlock door
-u - update";
+n - unlock door";
 
 immutable commands =
 "Commands:

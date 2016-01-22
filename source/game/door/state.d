@@ -33,6 +33,11 @@ class OpenState : DoorState
 				break;
 		}
 	}
+
+	override string toString()
+	{
+		return "Open";
+	}
 }
 
 class ClosedState : DoorState
@@ -61,6 +66,11 @@ class ClosedState : DoorState
 				break;
 		}
 	}
+
+	override string toString()
+	{
+		return "Closed";
+	}
 }
 
 class LockedState : DoorState
@@ -77,5 +87,10 @@ class LockedState : DoorState
 			default:
 				break;
 		}
+	}
+
+	override string toString()
+	{
+		return "Locked";
 	}
 }

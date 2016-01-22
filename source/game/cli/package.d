@@ -29,10 +29,14 @@ void interactive()
 		{
 			case "s":
 				import std.stdio : writeln;
-				writeln(door.states);
+				writeln(door.states.front);
+				break;
+			case "m":
+				import std.stdio : writeln;
+				writeln(door.inputCommands[]);
 				break;
 			case "h":
-// 				printHelp();
+ 				printHelp();
 				printCommands();
 				break;
 			case "c":
@@ -47,8 +51,7 @@ void interactive()
 			case "n":
 				door.handleInput(Input.Unlock);
 				break;
-			case "u":
-				import std.stdio : writeln;
+			case "a":
 				door.update();
 				break;
 			case "q":

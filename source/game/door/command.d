@@ -31,6 +31,12 @@ class InputCommand : DoorCommand
 	{
 		door.states.front.handleInput(door, input);
 	}
+
+	override string toString()
+	{
+		import std.conv : to;
+		return input.to!string;
+	}
 }
 
 alias StateCommand = DoorCommand;
