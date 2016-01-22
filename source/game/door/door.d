@@ -3,51 +3,57 @@ module game.door.door;
 class Door
 {
 	import game.door.state : DoorState;
-	DoorState[] states;
+	import std.container.slist : SList;
+	SList!DoorState states;
 
-	auto ref state() @property
-	{
-		if (states.length > 0)
-		{
-			import std.range.primitives : back;
-			return states.back;
-		}
-		return null;
-	}
+	import std.container.dlist : DList;
+	import game.door.command : InputCommand;
+	DList!InputCommand inputCommands;
 
-	import std.pattern.doublebuffer : DoubleBuffer;
-	import game.door.command : DoorCommand;
-	DoubleBuffer!(DoorCommand[]) commandBuffers;
+	import game.door.command : StateCommand;
+	DList!StateCommand stateCommands;
 
 	this()
 	{
 		import game.door.state : OpenState;
-		states ~= new OpenState;
+		states.insertFront(new OpenState);
 	}
 
-	void addCommand(DoorCommand command)
+	void addCommand(StateCommand command)
 	{
-		commandBuffers.back ~= command;
+		stateCommands.insertBack(command);
+	}
+
+	void addCommand(InputCommand command)
+	{
+		inputCommands.insertBack(command);
 	}
 
 	import game.door.state : Input;
 	void handleInput(Input input)
 	{
-		state.handleInput(this, input);
+		import game.door.command : InputCommand;
+		auto inputCommand = new InputCommand(this, input);
+		addCommand(inputCommand);
+	}
+
+	void updateState()
+	{
+		foreach (stateCommand; stateCommands)
+		{
+			stateCommand.exec();
+		}
+		stateCommands.clear();
 	}
 
 	void update()
 	{
-		import std.stdio : writeln;
-		writeln(states);
-		foreach (command; commandBuffers.front)
+		foreach (inputCommand; inputCommands)
 		{
-			command.exec();
+			updateState();
+			inputCommand.exec();
 		}
-		commandBuffers.front.length = 0;
-		commandBuffers.popFront();
-
-		writeln(states);
-		writeln();
+		updateState();
+		inputCommands.clear();
 	}
 }

@@ -29,11 +29,13 @@ class InputCommand : DoorCommand
 
 	override void exec()
 	{
-		door.handleInput(input);
+		door.states.front.handleInput(door, input);
 	}
 }
 
-class PopStateCommand : DoorCommand
+alias StateCommand = DoorCommand;
+
+class PopStateCommand : StateCommand
 {
 	this(Door door)
 	{
@@ -42,11 +44,11 @@ class PopStateCommand : DoorCommand
 
 	override void exec()
 	{
-		door.states = door.states[0..$-1];
+		door.states.removeFront();
 	}
 }
 
-class PushStateCommand : DoorCommand
+class PushStateCommand : StateCommand
 {
 	import game.door.state : DoorState;
 	DoorState state;
@@ -59,6 +61,6 @@ class PushStateCommand : DoorCommand
 
 	override void exec()
 	{
-		door.states ~= state;
+		door.states.insertFront(state);
 	}
 }
