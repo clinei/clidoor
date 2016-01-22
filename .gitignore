@@ -1,4 +1,5 @@
-/pattern
+/clidoor
+/clidoor.exe
 .dub
 /dub.selections.json
 docs.json
