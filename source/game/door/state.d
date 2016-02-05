@@ -13,13 +13,13 @@ import std.pattern.state : CommandState;
 import game.door.door : Door;
 alias DoorState = CommandState!(Door, Input);
 
-class OpenState : DoorState
+final class OpenState : DoorState
 {
 	void handleInput(Door door, Input input)
 	{
-		switch (input)
+		switch (input) with(Input)
 		{
-			case Input.Close:
+			case Close:
 				import game.door.command : PopStateCommand;
 				auto popCommand = new PopStateCommand(door);
 				door.addCommand(popCommand);
@@ -40,13 +40,13 @@ class OpenState : DoorState
 	}
 }
 
-class ClosedState : DoorState
+final class ClosedState : DoorState
 {
 	void handleInput(Door door, Input input)
 	{
-		switch (input)
+		switch (input) with(Input)
 		{
-			case Input.Open:
+			case Open:
 				import game.door.command : PopStateCommand;
 				auto popCommand = new PopStateCommand(door);
 				door.addCommand(popCommand);
@@ -56,7 +56,7 @@ class ClosedState : DoorState
 				auto pushCommand = new PushStateCommand(door, newState);
 				door.addCommand(pushCommand);
 				break;
-			case Input.Lock:
+			case Lock:
 				auto newState = new LockedState;
 				import game.door.command : PushStateCommand;
 				auto pushCommand = new PushStateCommand(door, newState);
@@ -73,13 +73,13 @@ class ClosedState : DoorState
 	}
 }
 
-class LockedState : DoorState
+final class LockedState : DoorState
 {
 	void handleInput(Door door, Input input)
 	{
-		switch (input)
+		switch (input) with(Input)
 		{
-			case Input.Unlock:
+			case Unlock:
 				import game.door.command : PopStateCommand;
 				auto popCommand = new PopStateCommand(door);
 				door.addCommand(popCommand);

@@ -1,6 +1,6 @@
 module game.door.door;
 
-class Door
+final class Door
 {
 	import game.door.state : DoorState;
 	import std.container.slist : SList;

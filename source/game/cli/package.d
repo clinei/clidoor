@@ -24,41 +24,44 @@ void interactive()
 		req = readln();
 		req.length -= 1; // pop off the '\n'
 
-		import game.door.state : Input;
-		switch (req)
+		foreach (c; req)
 		{
-			case "s":
-				import std.stdio : writeln;
-				writeln(door.states.front);
-				break;
-			case "m":
-				import std.stdio : writeln;
-				writeln(door.inputCommands[]);
-				break;
-			case "h":
- 				printHelp();
-				printCommands();
-				break;
-			case "c":
-				door.handleInput(Input.Close);
-				break;
-			case "o":
-				door.handleInput(Input.Open);
-				break;
-			case "l":
-				door.handleInput(Input.Lock);
-				break;
-			case "n":
-				door.handleInput(Input.Unlock);
-				break;
-			case "a":
-				door.update();
-				break;
-			case "q":
-				return;
-			default:
-				printUnrecognized(req);
-				break;
+			import game.door.state : Input;
+			switch (c)
+			{
+				case 's':
+					import std.stdio : writeln;
+					writeln(door.states.front);
+					break;
+				case 'm':
+					import std.stdio : writeln;
+					writeln(door.inputCommands[]);
+					break;
+				case 'h':
+					printHelp();
+					printCommands();
+					break;
+				case 'c':
+					door.handleInput(Input.Close);
+					break;
+				case 'o':
+					door.handleInput(Input.Open);
+					break;
+				case 'l':
+					door.handleInput(Input.Lock);
+					break;
+				case 'n':
+					door.handleInput(Input.Unlock);
+					break;
+				case 'a':
+					door.update();
+					break;
+				case 'q':
+					return;
+				default:
+					printUnrecognized(req);
+					break;
+			}
 		}
 
 		string res;

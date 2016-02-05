@@ -15,7 +15,7 @@ class DoorCommand : Executable
 	abstract void exec();
 }
 
-class InputCommand : DoorCommand
+final class InputCommand : DoorCommand
 {
 	import game.door.state : Input;
 	Input input;
@@ -41,7 +41,7 @@ class InputCommand : DoorCommand
 
 alias StateCommand = DoorCommand;
 
-class PopStateCommand : StateCommand
+final class PopStateCommand : StateCommand
 {
 	this(Door door)
 	{
@@ -54,7 +54,7 @@ class PopStateCommand : StateCommand
 	}
 }
 
-class PushStateCommand : StateCommand
+final class PushStateCommand : StateCommand
 {
 	import game.door.state : DoorState;
 	DoorState state;
