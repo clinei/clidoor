@@ -3,11 +3,11 @@ module game.cli.data.text;
 immutable cursor = ">>";
 
 immutable help =
-"Record commands for a door and update
-to apply the recorded commands.";
+"Record commands for a door and apply
+the recorded commands to update.
+You can also chain the commands
+e.g. 'cla' -> close, lock and apply.";
 
-import std.format : format;
-import game.cli.data.commands;
 immutable commandList =
 "h - show help
 q - quit
@@ -17,7 +17,9 @@ a - apply recorded commands
 c - close door
 o - open door
 l - lock door
-n - unlock door";
+n - unlock door
+k - kick door
+r - repair door";
 
 immutable commands =
 "Commands:

@@ -15,6 +15,9 @@ final class Door
 
 	this()
 	{
+		import game.door.state : UnbrokenState;
+		states.insertFront(new UnbrokenState(3));
+
 		import game.door.state : OpenState;
 		states.insertFront(new OpenState);
 	}

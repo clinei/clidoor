@@ -7,7 +7,7 @@ interface State(Owner, Input)
 
 interface CommandState(Owner, Input)
 {
-	void handleInput(Owner owner, Input input);
+	bool handleInput(Owner owner, Input input);
 }
 
 interface Enterable(Owner)

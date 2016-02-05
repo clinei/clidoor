@@ -6,17 +6,100 @@ enum Input : uint
 	Lock,
 	Unlock,
 	Open,
-	Close
+	Close,
+	Kick,
+	Repair
 }
 
 import std.pattern.state : CommandState;
 import game.door.door : Door;
 alias DoorState = CommandState!(Door, Input);
 
+final class UnbrokenState : DoorState
+{
+	uint health;
+
+	this(uint health)
+	{
+		this.health = health;
+	}
+
+	bool handleInput(Door door, Input input)
+	{
+		bool consumed = true;
+		switch (input) with(Input)
+		{
+			case Kick:
+				if (health > 1)
+				{
+					health -= 1;
+				}
+				else
+				{
+					foreach (state; door.states)
+					{
+						import game.door.command : PopStateCommand;
+						auto popCommand = new PopStateCommand(door);
+						door.addCommand(popCommand);
+					}
+
+					auto newState = new BrokenState;
+
+					import game.door.command : PushStateCommand;
+					auto pushCommand = new PushStateCommand(door, newState);
+					door.addCommand(pushCommand);
+				}
+				break;
+			default:
+				consumed = false;
+				break;
+		}
+		return consumed;
+	}
+
+	override string toString()
+	{
+		import std.conv : to;
+		return "Unbroken(" ~ health.to!string ~ ")";
+	}
+}
+
+final class BrokenState : DoorState
+{
+	bool handleInput(Door door, Input input)
+	{
+		bool consumed = true;
+		switch (input) with(Input)
+		{
+			case Repair:
+				import game.door.command : PopStateCommand;
+				auto popCommand = new PopStateCommand(door);
+				door.addCommand(popCommand);
+
+				auto newState = new UnbrokenState(3);
+
+				import game.door.command : PushStateCommand;
+				auto pushCommand = new PushStateCommand(door, newState);
+				door.addCommand(pushCommand);
+				goto default;
+			default:
+				consumed = true;
+				break;
+		}
+		return consumed;
+	}
+
+	override string toString()
+	{
+		return "Broken";
+	}
+}
+
 final class OpenState : DoorState
 {
-	void handleInput(Door door, Input input)
+	bool handleInput(Door door, Input input)
 	{
+		bool consumed = true;
 		switch (input) with(Input)
 		{
 			case Close:
@@ -25,13 +108,16 @@ final class OpenState : DoorState
 				door.addCommand(popCommand);
 
 				auto newState = new ClosedState;
+
 				import game.door.command : PushStateCommand;
 				auto pushCommand = new PushStateCommand(door, newState);
 				door.addCommand(pushCommand);
 				break;
 			default:
+				consumed = false;
 				break;
 		}
+		return consumed;
 	}
 
 	override string toString()
@@ -42,8 +128,9 @@ final class OpenState : DoorState
 
 final class ClosedState : DoorState
 {
-	void handleInput(Door door, Input input)
+	bool handleInput(Door door, Input input)
 	{
+		bool consumed = true;
 		switch (input) with(Input)
 		{
 			case Open:
@@ -63,8 +150,10 @@ final class ClosedState : DoorState
 				door.addCommand(pushCommand);
 				break;
 			default:
+				consumed = false;
 				break;
 		}
+		return consumed;
 	}
 
 	override string toString()
@@ -75,8 +164,9 @@ final class ClosedState : DoorState
 
 final class LockedState : DoorState
 {
-	void handleInput(Door door, Input input)
+	bool handleInput(Door door, Input input)
 	{
+		bool consumed = true;
 		switch (input) with(Input)
 		{
 			case Unlock:
@@ -85,8 +175,10 @@ final class LockedState : DoorState
 				door.addCommand(popCommand);
 				break;
 			default:
+				consumed = false;
 				break;
 		}
+		return consumed;
 	}
 
 	override string toString()

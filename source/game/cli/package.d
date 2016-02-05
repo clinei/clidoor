@@ -31,7 +31,7 @@ void interactive()
 			{
 				case 's':
 					import std.stdio : writeln;
-					writeln(door.states.front);
+					writeln(door.states[]);
 					break;
 				case 'm':
 					import std.stdio : writeln;
@@ -53,13 +53,20 @@ void interactive()
 				case 'n':
 					door.handleInput(Input.Unlock);
 					break;
+				case 'k':
+					door.handleInput(Input.Kick);
+					break;
+				case 'r':
+					door.handleInput(Input.Repair);
+					break;
 				case 'a':
 					door.update();
 					break;
 				case 'q':
 					return;
 				default:
-					printUnrecognized(req);
+					import std.conv : to;
+					printUnrecognized(c.to!string);
 					break;
 			}
 		}

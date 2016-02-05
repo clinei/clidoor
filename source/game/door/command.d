@@ -29,7 +29,14 @@ final class InputCommand : DoorCommand
 
 	override void exec()
 	{
-		door.states.front.handleInput(door, input);
+		foreach (state; door.states)
+		{
+			// Stop execution if input has been consumed
+			if (bool consumed = state.handleInput(door, input))
+			{
+				return;
+			}
+		}
 	}
 
 	override string toString()
