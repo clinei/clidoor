@@ -81,6 +81,11 @@ final class BrokenState : DoorState
 				import game.door.command : PushStateCommand;
 				auto pushCommand = new PushStateCommand(door, newState);
 				door.addCommand(pushCommand);
+
+				auto newState2 = new OpenState;
+
+				auto pushCommand2 = new PushStateCommand(door, newState2);
+				door.addCommand(pushCommand2);
 				break;
 			default:
 				consumed = false;
