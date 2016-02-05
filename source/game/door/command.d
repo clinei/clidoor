@@ -34,9 +34,16 @@ final class InputCommand : DoorCommand
 			// Stop execution if input has been consumed
 			if (bool consumed = state.handleInput(door, input))
 			{
-				return;
+				goto Success;
 			}
 		}
+
+		// Show info about the unconsumed command
+		import std.stdio : writeln;
+		import std.conv : to;
+		writeln("'" ~ input.to!string ~ "' had no effect on the door.");
+
+		Success: {}
 	}
 
 	override string toString()
