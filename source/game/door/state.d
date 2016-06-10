@@ -12,8 +12,8 @@ enum Input : uint
 }
 
 import std.pattern.state : CommandState;
-import game.door.door : Door;
-alias DoorState = CommandState!(Door, Input);
+import game.door.door : IDoor;
+alias DoorState = CommandState!(IDoor, Input);
 
 final class UnbrokenState : DoorState
 {
@@ -28,7 +28,7 @@ final class UnbrokenState : DoorState
 		this.health = health;
 	}
 
-	bool handleInput(Door door, Input input)
+	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
 		switch (input) with(Input)
@@ -81,7 +81,7 @@ final class BrokenState : DoorState
 		this._allocator = allocator;
 	}
 
-	bool handleInput(Door door, Input input)
+	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
 		switch (input) with(Input)
@@ -126,7 +126,7 @@ final class OpenState : DoorState
 		this._allocator = allocator;
 	}
 
-	bool handleInput(Door door, Input input)
+	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
 		switch (input) with(Input)
@@ -166,7 +166,7 @@ final class ClosedState : DoorState
 		this._allocator = allocator;
 	}
 
-	bool handleInput(Door door, Input input)
+	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
 		switch (input) with(Input)
@@ -212,7 +212,7 @@ final class LockedState : DoorState
 		this._allocator = allocator;
 	}
 
-	bool handleInput(Door door, Input input)
+	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
 		switch (input) with(Input)

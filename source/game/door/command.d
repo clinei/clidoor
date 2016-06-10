@@ -4,10 +4,10 @@ import std.pattern.command : Executable;
 
 class DoorCommand : Executable
 {
-	import game.door.door : Door;
-	Door door;
+	import game.door.door : IDoor;
+	IDoor door;
 
-	this(Door door)
+	this(IDoor door)
 	{
 		this.door = door;
 	}
@@ -20,8 +20,8 @@ final class InputCommand : DoorCommand
 	import game.door.state : Input;
 	Input input;
 
-	import game.door.door : Door;
-	this(Door door, Input input)
+	import game.door.door : IDoor;
+	this(IDoor door, Input input)
 	{
 		super(door);
 		this.input = input;
@@ -60,7 +60,7 @@ final class PopStateCommand : StateCommand
 	import std.experimental.allocator : IAllocator, theAllocator;
 	private IAllocator _allocator;
 
-	this(Door door, IAllocator allocator)
+	this(IDoor door, IAllocator allocator)
 	{
 		super(door);
 		this._allocator = allocator;
@@ -68,9 +68,9 @@ final class PopStateCommand : StateCommand
 
 	override void exec()
 	{
-		// is this safe?
+		// not safe, apparently
 		import std.experimental.allocator : dispose;
-		_allocator.dispose(door.states.front);
+		//_allocator.dispose(door.states.front);
 		door.states.removeFront();
 	}
 }
@@ -80,7 +80,7 @@ final class PushStateCommand : StateCommand
 	import game.door.state : DoorState;
 	DoorState state;
 
-	this(Door door, DoorState state)
+	this(IDoor door, DoorState state)
 	{
 		super(door);
 		this.state = state;

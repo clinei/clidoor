@@ -1,22 +1,55 @@
 module game.door.door;
 
-final class Door
+interface IDoor
 {
 	import game.door.state : DoorState;
 	import std.container.slist : SList;
-	SList!DoorState states;
+	ref SList!DoorState states();
 
 	import std.container.dlist : DList;
 	import game.door.command : InputCommand;
-	DList!InputCommand inputCommands;
+	ref DList!InputCommand inputCommands();
 
 	import game.door.command : StateCommand;
-	DList!StateCommand stateCommands;
+	ref DList!StateCommand stateCommands();
 
-	import std.experimental.allocator : IAllocator, theAllocator;
-	private IAllocator _allocator;
+	void addCommand(StateCommand command);
 
-	this(IAllocator allocator = theAllocator)
+	void addCommand(InputCommand command);
+
+	import game.door.state : Input;
+	void handleInput(Input input);
+}
+
+import std.experimental.allocator : theAllocator;
+final class Door(A = typeof(theAllocator)) : IDoor
+{
+	import game.door.state : DoorState;
+	import std.container.slist : SList;
+	SList!DoorState _states;
+	ref SList!DoorState states() { return _states; }
+
+	import std.container.dlist : DList;
+	import game.door.command : InputCommand;
+	DList!InputCommand _inputCommands;
+	ref DList!InputCommand inputCommands() { return _inputCommands; }
+
+	import game.door.command : StateCommand;
+	DList!StateCommand _stateCommands;
+	ref DList!StateCommand stateCommands() { return _stateCommands; }
+
+	import std.experimental.allocator : theAllocator;
+	private A _allocator;
+
+	static if (is(A == typeof(theAllocator)))
+	{
+		this()
+		{
+			this._allocator = theAllocator;
+		}
+	}
+
+	this()(auto ref A allocator)
 	{
 		_allocator = allocator;
 
@@ -38,7 +71,6 @@ final class Door
 		inputCommands.insertBack(command);
 	}
 
-	import game.door.state : Input;
 	void handleInput(Input input)
 	{
 		import std.experimental.allocator : make;
@@ -47,13 +79,13 @@ final class Door
 		addCommand(inputCommand);
 	}
 
-	void updateState()
+	private void updateState()
 	{
 		foreach (stateCommand; stateCommands)
 		{
 			stateCommand.exec();
 			import std.experimental.allocator : dispose;
-			_allocator.dispose(stateCommand);
+			//_allocator.dispose(stateCommand);
 		}
 		stateCommands.clear();
 	}
@@ -65,7 +97,7 @@ final class Door
 			updateState();
 			inputCommand.exec();
 			import std.experimental.allocator : dispose;
-			_allocator.dispose(inputCommand);
+			//_allocator.dispose(inputCommand);
 		}
 		updateState();
 		inputCommands.clear();
