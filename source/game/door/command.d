@@ -32,7 +32,7 @@ final class InputCommand : DoorCommand
 		foreach (state; door.states)
 		{
 			// Stop execution if input has been consumed
-			if (bool consumed = state.handleInput(door, input))
+			if (state.handleInput(door, input))
 			{
 				goto Success;
 			}
