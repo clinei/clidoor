@@ -3,7 +3,8 @@
 void main()
 {
 	import game.cli : interactive;
-	interactive();
+	import std.experimental.allocator : theAllocator;
+	interactive(theAllocator);
 	/+
 	// Create a door
 	import game.door.door : Door;

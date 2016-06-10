@@ -57,13 +57,20 @@ alias StateCommand = DoorCommand;
 
 final class PopStateCommand : StateCommand
 {
-	this(Door door)
+	import std.experimental.allocator : IAllocator, theAllocator;
+	private IAllocator _allocator;
+
+	this(Door door, IAllocator allocator)
 	{
 		super(door);
+		this._allocator = allocator;
 	}
 
 	override void exec()
 	{
+		// is this safe?
+		import std.experimental.allocator : dispose;
+		_allocator.dispose(door.states.front);
 		door.states.removeFront();
 	}
 }

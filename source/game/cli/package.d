@@ -2,7 +2,8 @@ module game.cli;
 
 /// Command line interface
 
-void interactive()
+import std.experimental.allocator : IAllocator, theAllocator;
+void interactive(IAllocator allocator = theAllocator)
 {
 	scope(exit)
 	{
@@ -10,8 +11,9 @@ void interactive()
 		writeln("Quitting...");
 	}
 
+	import std.experimental.allocator : make;
 	import game.door.door : Door;
-	auto door = new Door;
+	auto door = allocator.make!Door;
 
 	printHelp();
 	printCommands();

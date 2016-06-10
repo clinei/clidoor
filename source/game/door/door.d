@@ -13,13 +13,19 @@ final class Door
 	import game.door.command : StateCommand;
 	DList!StateCommand stateCommands;
 
-	this()
+	import std.experimental.allocator : IAllocator, theAllocator;
+	private IAllocator _allocator;
+
+	this(IAllocator allocator = theAllocator)
 	{
+		_allocator = allocator;
+
+		import std.experimental.allocator : make;
 		import game.door.state : UnbrokenState;
-		states.insertFront(new UnbrokenState(3));
+		states.insertFront(_allocator.make!UnbrokenState(3));
 
 		import game.door.state : OpenState;
-		states.insertFront(new OpenState);
+		states.insertFront(_allocator.make!OpenState);
 	}
 
 	void addCommand(StateCommand command)
@@ -35,8 +41,9 @@ final class Door
 	import game.door.state : Input;
 	void handleInput(Input input)
 	{
+		import std.experimental.allocator : make;
 		import game.door.command : InputCommand;
-		auto inputCommand = new InputCommand(this, input);
+		auto inputCommand = _allocator.make!InputCommand(this, input);
 		addCommand(inputCommand);
 	}
 
@@ -45,6 +52,8 @@ final class Door
 		foreach (stateCommand; stateCommands)
 		{
 			stateCommand.exec();
+			import std.experimental.allocator : dispose;
+			_allocator.dispose(stateCommand);
 		}
 		stateCommands.clear();
 	}
@@ -55,6 +64,8 @@ final class Door
 		{
 			updateState();
 			inputCommand.exec();
+			import std.experimental.allocator : dispose;
+			_allocator.dispose(inputCommand);
 		}
 		updateState();
 		inputCommands.clear();
