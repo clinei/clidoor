@@ -57,37 +57,48 @@ alias StateCommand = DoorCommand;
 
 final class PopStateCommand : StateCommand
 {
-	import std.experimental.allocator : IAllocator, theAllocator;
-	private IAllocator _allocator;
-
-	this(IDoor door, IAllocator allocator)
+	this(IDoor door)
 	{
 		super(door);
-		this._allocator = allocator;
 	}
 
 	override void exec()
 	{
-		// not safe, apparently
-		import std.experimental.allocator : dispose;
-		//_allocator.dispose(door.states.front);
-		door.states.removeFront();
+		door.popState();
 	}
 }
 
-final class PushStateCommand : StateCommand
+final class PushStateCommand(C) : StateCommand
 {
-	import game.door.state : DoorState;
-	DoorState state;
-
-	this(IDoor door, DoorState state)
+	enum bool needArgs = __traits(hasMember, C, "__ctor");
+	static if (needArgs)
 	{
-		super(door);
-		this.state = state;
+		import std.traits : Parameters;
+		alias Args = Parameters!(C.__ctor);
+		import std.typecons : Tuple;
+		Tuple!Args _args;
+
+		this(IDoor door, Args args)
+		{
+			super(door);
+			_args = args;
+		}
+
+		override void exec()
+		{
+			door.pushState!C(_args.expand);
+		}
 	}
-
-	override void exec()
+	else
 	{
-		door.states.insertFront(state);
+		this(IDoor door)
+		{
+			super(door);
+		}
+
+		override void exec()
+		{
+			door.pushState!C;
+		}
 	}
 }

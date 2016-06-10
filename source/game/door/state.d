@@ -19,12 +19,8 @@ final class UnbrokenState : DoorState
 {
 	uint health;
 
-	import std.experimental.allocator : IAllocator, theAllocator;
-	private IAllocator _allocator;
-
-	this(uint health, IAllocator allocator = theAllocator)
+	this(uint health)
 	{
-		this._allocator = allocator;
 		this.health = health;
 	}
 
@@ -40,21 +36,14 @@ final class UnbrokenState : DoorState
 				}
 				else
 				{
-					import std.range : walkLength;
 					foreach (state; door.states)
 					{
-						import std.experimental.allocator : make;
 						import game.door.command : PopStateCommand;
-						auto popCommand = _allocator.make!PopStateCommand(door, _allocator);
-						door.addCommand(popCommand);
+						door.addCommand!PopStateCommand(door);
 					}
 
-					import std.experimental.allocator : make;
-					auto newState = _allocator.make!BrokenState;
-
 					import game.door.command : PushStateCommand;
-					auto pushCommand = _allocator.make!PushStateCommand(door, newState);
-					door.addCommand(pushCommand);
+					door.addCommand!(PushStateCommand!BrokenState)(door);
 				}
 				break;
 			default:
@@ -73,35 +62,15 @@ final class UnbrokenState : DoorState
 
 final class BrokenState : DoorState
 {
-	import std.experimental.allocator : IAllocator, theAllocator;
-	private IAllocator _allocator;
-
-	this(IAllocator allocator = theAllocator)
-	{
-		this._allocator = allocator;
-	}
-
 	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
 		switch (input) with(Input)
 		{
 			case Repair:
-				import std.experimental.allocator : make;
-				import game.door.command : PopStateCommand;
-				auto popCommand = _allocator.make!PopStateCommand(door, _allocator);
-				door.addCommand(popCommand);
-
-				auto newState = _allocator.make!UnbrokenState(3);
-
-				import game.door.command : PushStateCommand;
-				auto pushCommand = _allocator.make!PushStateCommand(door, newState);
-				door.addCommand(pushCommand);
-
-				auto newState2 = _allocator.make!OpenState;
-
-				auto pushCommand2 = _allocator.make!PushStateCommand(door, newState2);
-				door.addCommand(pushCommand2);
+				door.addCommand!PopStateCommand(door);
+				door.addCommand!(PushStateCommand!UnbrokenState)(door, 3);
+				door.addCommand!(PushStateCommand!OpenState)(door);
 				break;
 			default:
 				consumed = false;
@@ -118,30 +87,17 @@ final class BrokenState : DoorState
 
 final class OpenState : DoorState
 {
-	import std.experimental.allocator : IAllocator, theAllocator;
-	private IAllocator _allocator;
-
-	this(IAllocator allocator = theAllocator)
-	{
-		this._allocator = allocator;
-	}
-
 	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
 		switch (input) with(Input)
 		{
 			case Close:
-				import std.experimental.allocator : make;
 				import game.door.command : PopStateCommand;
-				auto popCommand = _allocator.make!PopStateCommand(door, _allocator);
-				door.addCommand(popCommand);
-
-				auto newState = _allocator.make!ClosedState;
+				door.addCommand!PopStateCommand(door);
 
 				import game.door.command : PushStateCommand;
-				auto pushCommand = _allocator.make!PushStateCommand(door, newState);
-				door.addCommand(pushCommand);
+				door.addCommand!(PushStateCommand!ClosedState)(door);
 				break;
 			default:
 				consumed = false;
@@ -158,36 +114,21 @@ final class OpenState : DoorState
 
 final class ClosedState : DoorState
 {
-	import std.experimental.allocator : IAllocator, theAllocator;
-	private IAllocator _allocator;
-
-	this(IAllocator allocator = theAllocator)
-	{
-		this._allocator = allocator;
-	}
-
 	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
 		switch (input) with(Input)
 		{
 			case Open:
-				import std.experimental.allocator : make;
 				import game.door.command : PopStateCommand;
-				auto popCommand = _allocator.make!PopStateCommand(door, _allocator);
-				door.addCommand(popCommand);
+				door.addCommand!PopStateCommand(door);
 
-				auto newState = _allocator.make!OpenState;
 				import game.door.command : PushStateCommand;
-				auto pushCommand = _allocator.make!PushStateCommand(door, newState);
-				door.addCommand(pushCommand);
+				door.addCommand!(PushStateCommand!OpenState)(door);
 				break;
 			case Lock:
-				import std.experimental.allocator : make;
-				auto newState = _allocator.make!LockedState;
 				import game.door.command : PushStateCommand;
-				auto pushCommand = _allocator.make!PushStateCommand(door, newState);
-				door.addCommand(pushCommand);
+				door.addCommand!(PushStateCommand!LockedState)(door);
 				break;
 			default:
 				consumed = false;
@@ -204,14 +145,6 @@ final class ClosedState : DoorState
 
 final class LockedState : DoorState
 {
-	import std.experimental.allocator : IAllocator, theAllocator;
-	private IAllocator _allocator;
-
-	this(IAllocator allocator = theAllocator)
-	{
-		this._allocator = allocator;
-	}
-
 	bool handleInput(IDoor door, Input input)
 	{
 		bool consumed = true;
@@ -220,8 +153,7 @@ final class LockedState : DoorState
 			case Unlock:
 				import std.experimental.allocator : make;
 				import game.door.command : PopStateCommand;
-				auto popCommand = _allocator.make!PopStateCommand(door, _allocator);
-				door.addCommand(popCommand);
+				door.addCommand!PopStateCommand(door);
 				break;
 			default:
 				consumed = false;
