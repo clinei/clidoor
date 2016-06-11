@@ -13,9 +13,7 @@ interface IDoor
 	import game.door.command : StateCommand;
 	ref DList!StateCommand stateCommands();
 
-	void addCommand(StateCommand command);
-
-	void addCommand(InputCommand command);
+	void addCommand(C, Args...)(Args args) if (is(C : StateCommand));
 
 	import game.door.state : Input;
 	void handleInput(Input input);

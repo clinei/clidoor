@@ -68,7 +68,10 @@ final class BrokenState : DoorState
 		switch (input) with(Input)
 		{
 			case Repair:
+				import game.door.command : PopStateCommand;
 				door.addCommand!PopStateCommand(door);
+
+				import game.door.command : PushStateCommand;
 				door.addCommand!(PushStateCommand!UnbrokenState)(door, 3);
 				door.addCommand!(PushStateCommand!OpenState)(door);
 				break;
