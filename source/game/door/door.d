@@ -13,18 +13,46 @@ interface IDoor
 	import game.door.command : StateCommand;
 	ref DList!StateCommand stateCommands();
 
-	void addCommand(C, Args...)(Args args) if (is(C : StateCommand));
-
-	import game.door.state : Input;
-	void handleInput(Input input);
-
 	void popState();
 
 	void pushState(C, Args...)(Args args);
+
+	import game.door.state : BrokenState;
+	void pushState(C : BrokenState, Args...)(Args args);
+
+	import game.door.state : UnbrokenState;
+	void pushState(C : UnbrokenState, Args...)(Args args);
+
+	import game.door.state : OpenState;
+	void pushState(C : OpenState, Args...)(Args args);
+
+	import game.door.state : ClosedState;
+	void pushState(C : ClosedState, Args...)(Args args);
+
+	import game.door.state : LockedState;
+	void pushState(C : LockedState, Args...)(Args args);
+
+	void addCommand(C, Args...)(Args args) if (is(C : StateCommand));
+
+	import game.door.command : PopStateCommand;
+	void addCommand(C : PopStateCommand)();
+
+	import game.door.command : PushStateCommand;
+	void addCommand(C : PushStateCommand!BrokenState, Args...)(Args args);
+
+	void addCommand(C : PushStateCommand!UnbrokenState, Args...)(Args args);
+
+	void addCommand(C : PushStateCommand!OpenState, Args...)(Args args);
+
+	void addCommand(C : PushStateCommand!ClosedState, Args...)(Args args);
+
+	void addCommand(C : PushStateCommand!LockedState, Args...)(Args args);
+
+	import game.door.state : Input;
+	void handleInput(Input input);
 }
 
-import std.experimental.allocator : theAllocator;
-final class Door(A = typeof(theAllocator)) : IDoor
+final class Door(A) : IDoor
 {
 	import game.door.state : DoorState;
 	import std.container.slist : SList;
@@ -51,24 +79,16 @@ final class Door(A = typeof(theAllocator)) : IDoor
 
 	private A _allocator;
 
-	static if (is(A == typeof(theAllocator)))
-	{
-		this()
-		{
-			this(theAllocator);
-		}
-	}
-
 	this(A allocator)
 	{
 		_allocator = allocator;
 
 		import game.door.command : PushStateCommand;
 		import game.door.state : UnbrokenState;
-		addCommand!(PushStateCommand!UnbrokenState)(this, 3);
+		addCommand!(PushStateCommand!UnbrokenState)(3);
 
 		import game.door.state : OpenState;
-		addCommand!(PushStateCommand!OpenState)(this);
+		addCommand!(PushStateCommand!OpenState);
 		update();
 	}
 
@@ -76,7 +96,7 @@ final class Door(A = typeof(theAllocator)) : IDoor
 	{
 		import std.experimental.allocator : make;
 		//_stateCommandsAllocator.make!C(args);
-		stateCommands.insertBack(_allocator.make!C(args));
+		stateCommands.insertBack(_allocator.make!C(this, args));
 	}
 
 	private void addCommand(InputCommand command)

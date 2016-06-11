@@ -57,6 +57,7 @@ alias StateCommand = DoorCommand;
 
 final class PopStateCommand : StateCommand
 {
+	import game.door.door : IDoor;
 	this(IDoor door)
 	{
 		super(door);
@@ -70,6 +71,8 @@ final class PopStateCommand : StateCommand
 
 final class PushStateCommand(C) : StateCommand
 {
+	import game.door.door : IDoor;
+	
 	enum bool needArgs = __traits(hasMember, C, "__ctor");
 	static if (needArgs)
 	{
