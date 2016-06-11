@@ -3,3 +3,9 @@ name "clidoor"
 configuration "app" {
 	targetType "executable"
 }
+
+configuration "unittest" {
+	targetType "executable"
+	excludedSourceFiles "source/app.d"
+	mainSourceFile "unittest.d"
+}
