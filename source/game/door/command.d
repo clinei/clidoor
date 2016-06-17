@@ -73,23 +73,20 @@ final class PushStateCommand(C) : StateCommand
 {
 	import game.door.door : IDoor;
 	
-	enum bool needArgs = __traits(hasMember, C, "__ctor");
-	static if (needArgs)
+	import game.door.state : UnbrokenState;
+	static if (is(C : UnbrokenState))
 	{
-		import std.traits : Parameters;
-		alias Args = Parameters!(C.__ctor);
-		import std.typecons : Tuple;
-		Tuple!Args _args;
+		uint _health;
 
-		this(IDoor door, Args args)
+		this(IDoor door, uint health)
 		{
 			super(door);
-			_args = args;
+			_health = health;
 		}
 
 		override void exec()
 		{
-			door.pushState!C(_args.expand);
+			door.pushUnbrokenState(_health);
 		}
 	}
 	else
@@ -101,7 +98,26 @@ final class PushStateCommand(C) : StateCommand
 
 		override void exec()
 		{
-			door.pushState!C;
+			import game.door.state : BrokenState;
+			import game.door.state : OpenState;
+			import game.door.state : ClosedState;
+			import game.door.state : LockedState;
+			static if (is(C : BrokenState))
+			{
+				door.pushBrokenState();
+			}
+			else if (is(C : OpenState))
+			{
+				door.pushOpenState();
+			}
+			else if (is(C : ClosedState))
+			{
+				door.pushClosedState();
+			}
+			else if (is(C : LockedState))
+			{
+				door.pushLockedState();
+			}
 		}
 	}
 }

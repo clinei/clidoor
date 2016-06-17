@@ -38,12 +38,9 @@ final class UnbrokenState : DoorState
 				{
 					foreach (state; door.states)
 					{
-						import game.door.command : PopStateCommand;
-						door.addCommand!PopStateCommand;
+						door.addPopStateCommand();
 					}
-
-					import game.door.command : PushStateCommand;
-					door.addCommand!(PushStateCommand!BrokenState);
+					door.addPushBrokenStateCommand();
 				}
 				break;
 			default:
@@ -68,12 +65,10 @@ final class BrokenState : DoorState
 		switch (input) with(Input)
 		{
 			case Repair:
-				import game.door.command : PopStateCommand;
-				door.addCommand!PopStateCommand;
+				door.addPopStateCommand();
 
-				import game.door.command : PushStateCommand;
-				door.addCommand!(PushStateCommand!UnbrokenState)(3);
-				door.addCommand!(PushStateCommand!OpenState);
+				door.addPushUnbrokenStateCommand(3);
+				door.addPushOpenStateCommand();
 				break;
 			default:
 				consumed = false;
@@ -96,11 +91,8 @@ final class OpenState : DoorState
 		switch (input) with(Input)
 		{
 			case Close:
-				import game.door.command : PopStateCommand;
-				door.addCommand!PopStateCommand;
-
-				import game.door.command : PushStateCommand;
-				door.addCommand!(PushStateCommand!ClosedState);
+				door.addPopStateCommand();
+				door.addPushClosedStateCommand();
 				break;
 			default:
 				consumed = false;
@@ -123,15 +115,11 @@ final class ClosedState : DoorState
 		switch (input) with(Input)
 		{
 			case Open:
-				import game.door.command : PopStateCommand;
-				door.addCommand!PopStateCommand;
-
-				import game.door.command : PushStateCommand;
-				door.addCommand!(PushStateCommand!OpenState);
+				door.addPopStateCommand();
+				door.addPushOpenStateCommand();
 				break;
 			case Lock:
-				import game.door.command : PushStateCommand;
-				door.addCommand!(PushStateCommand!LockedState);
+				door.addPushLockedStateCommand();
 				break;
 			default:
 				consumed = false;
@@ -154,9 +142,7 @@ final class LockedState : DoorState
 		switch (input) with(Input)
 		{
 			case Unlock:
-				import std.experimental.allocator : make;
-				import game.door.command : PopStateCommand;
-				door.addCommand!PopStateCommand;
+				door.addPopStateCommand();
 				break;
 			default:
 				consumed = false;

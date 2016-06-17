@@ -15,38 +15,27 @@ interface IDoor
 
 	void popState();
 
-	void pushState(C, Args...)(Args args);
+	void pushBrokenState();
 
-	import game.door.state : BrokenState;
-	void pushState(C : BrokenState, Args...)(Args args);
+	void pushUnbrokenState(uint health);
 
-	import game.door.state : UnbrokenState;
-	void pushState(C : UnbrokenState, Args...)(Args args);
+	void pushOpenState();
 
-	import game.door.state : OpenState;
-	void pushState(C : OpenState, Args...)(Args args);
+	void pushClosedState();
 
-	import game.door.state : ClosedState;
-	void pushState(C : ClosedState, Args...)(Args args);
+	void pushLockedState();
 
-	import game.door.state : LockedState;
-	void pushState(C : LockedState, Args...)(Args args);
+	void addPopStateCommand();
 
-	void addCommand(C, Args...)(Args args) if (is(C : StateCommand));
+	void addPushBrokenStateCommand();
 
-	import game.door.command : PopStateCommand;
-	void addCommand(C : PopStateCommand)();
+	void addPushUnbrokenStateCommand(uint health);
 
-	import game.door.command : PushStateCommand;
-	void addCommand(C : PushStateCommand!BrokenState, Args...)(Args args);
+	void addPushOpenStateCommand();
 
-	void addCommand(C : PushStateCommand!UnbrokenState, Args...)(Args args);
+	void addPushClosedStateCommand();
 
-	void addCommand(C : PushStateCommand!OpenState, Args...)(Args args);
-
-	void addCommand(C : PushStateCommand!ClosedState, Args...)(Args args);
-
-	void addCommand(C : PushStateCommand!LockedState, Args...)(Args args);
+	void addPushLockedStateCommand();
 
 	import game.door.state : Input;
 	void handleInput(Input input);
@@ -92,11 +81,52 @@ final class Door(A) : IDoor
 		update();
 	}
 
-	void addCommand(C, Args...)(Args args) if (is(C : StateCommand))
+	private void addCommand(C, Args...)(Args args) if (is(C : StateCommand))
 	{
 		import std.experimental.allocator : make;
 		//_stateCommandsAllocator.make!C(args);
 		stateCommands.insertBack(_allocator.make!C(this, args));
+	}
+
+	void addPopStateCommand()
+	{
+		import game.door.command : PopStateCommand;
+		addCommand!PopStateCommand;
+	}
+
+	void addPushBrokenStateCommand()
+	{
+		import game.door.command : PushStateCommand;
+		import game.door.state : BrokenState;
+		addCommand!(PushStateCommand!BrokenState)();
+	}
+
+	void addPushUnbrokenStateCommand(uint health)
+	{
+		import game.door.command : PushStateCommand;
+		import game.door.state : UnbrokenState;
+		addCommand!(PushStateCommand!UnbrokenState)(health);
+	}
+
+	void addPushOpenStateCommand()
+	{
+		import game.door.command : PushStateCommand;
+		import game.door.state : OpenState;
+		addCommand!(PushStateCommand!OpenState)();
+	}
+
+	void addPushClosedStateCommand()
+	{
+		import game.door.command : PushStateCommand;
+		import game.door.state : ClosedState;
+		addCommand!(PushStateCommand!ClosedState)();
+	}
+
+	void addPushLockedStateCommand()
+	{
+		import game.door.command : PushStateCommand;
+		import game.door.state : LockedState;
+		addCommand!(PushStateCommand!LockedState)();
 	}
 
 	private void addCommand(InputCommand command)
@@ -145,9 +175,39 @@ final class Door(A) : IDoor
 		_allocator.dispose(front);
 	}
 
-	void pushState(C, Args...)(Args args)
+	private void pushState(C, Args...)(Args args)
 	{
 		import std.experimental.allocator : make;
 		states.insertFront(_allocator.make!C(args));
+	}
+
+	void pushBrokenState()
+	{
+		import game.door.state : BrokenState;
+		pushState!BrokenState();
+	}
+
+	void pushUnbrokenState(uint health)
+	{
+		import game.door.state : UnbrokenState;
+		pushState!UnbrokenState(health);
+	}
+
+	void pushOpenState()
+	{
+		import game.door.state : OpenState;
+		pushState!OpenState();
+	}
+
+	void pushClosedState()
+	{
+		import game.door.state : ClosedState;
+		pushState!ClosedState();
+	}
+
+	void pushLockedState()
+	{
+		import game.door.state : LockedState;
+		pushState!LockedState();
 	}
 }
